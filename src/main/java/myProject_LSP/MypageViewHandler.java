@@ -129,15 +129,23 @@ public class MypageViewHandler {
         }
     }
 
+
     @StreamListener(KafkaProcessor.INPUT)
-    public void whenOrderCancelled_then_DELETE_1(@Payload OrderCancelled orderCancelled) {
+    public void whenShippedCancelled_then_UPDATE_6(@Payload ShippedCancelled shippedCancelled) {
         try {
-            if (orderCancelled.isMe()) {
-                // view 레파지 토리에 삭제 쿼리
-                mypageRepository.deleteByOrderId(orderCancelled.getId());
+            if (shippedCancelled.isMe()) {
+                // view 객체 조회
+                List<Mypage> mypageList = mypageRepository.findByOrderId(shippedCancelled.getOrderId());
+                for(Mypage mypage : mypageList){
+                    // view 객체에 이벤트의 eventDirectValue 를 set 함
+                    mypage.setDeliveryStatus(shippedCancelled.getStatus());
+                    // view 레파지 토리에 save
+                    mypageRepository.save(mypage);
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
+
 }
