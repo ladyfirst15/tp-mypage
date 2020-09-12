@@ -120,6 +120,8 @@ public class MypageViewHandler {
                     // view 객체에 이벤트의 eventDirectValue 를 set 함
                     mypage.setCookId(cookQtyChecked.getId());
                     mypage.setCookStatus(cookQtyChecked.getStatus());
+                    mypage.setOrderStatus(cookQtyChecked.getStatus());
+
                     // view 레파지 토리에 save
                     mypageRepository.save(mypage);
                 }
