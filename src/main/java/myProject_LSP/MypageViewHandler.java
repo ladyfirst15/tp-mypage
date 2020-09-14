@@ -23,7 +23,6 @@ public class MypageViewHandler {
             if (ordered.isMe()) {
                 // view 객체 생성
                 Mypage mypage = new Mypage();
-                System.out.println(ordered.getStatus()+"#############3");
                 // view 객체에 이벤트의 Value 를 set 함
                 mypage.setRestaurantId(ordered.getRestaurantId());
                 mypage.setRestaurantMenuId(ordered.getRestaurantMenuId());
@@ -42,6 +41,7 @@ public class MypageViewHandler {
 
     @StreamListener(KafkaProcessor.INPUT)
     public void whenCooked_then_UPDATE_1(@Payload Cooked cooked) {
+        System.out.println("44444444444444444444444444444");
         try {
             if (cooked.isMe()) {
                 // view 객체 조회
@@ -75,30 +75,18 @@ public class MypageViewHandler {
             e.printStackTrace();
         }
     }
-    @StreamListener(KafkaProcessor.INPUT)
-    public void whenCookCancelled_then_UPDATE_3(@Payload CookCancelled cookCancelled) {
-        try {
-            if (cookCancelled.isMe()) {
-                // view 객체 조회
-                List<Mypage> mypageList = mypageRepository.findByOrderId(cookCancelled.getOrderId());
-                for(Mypage mypage : mypageList){
-                    // view 객체에 이벤트의 eventDirectValue 를 set 함
-                    mypage.setCookStatus(cookCancelled.getStatus());
-                    // view 레파지 토리에 save
-                    mypageRepository.save(mypage);
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+
     @StreamListener(KafkaProcessor.INPUT)
     public void whenShipped_then_UPDATE_4(@Payload Shipped shipped) {
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@22");
         try {
             if (shipped.isMe()) {
                 // view 객체 조회
-                System.out.println(shipped.getStatus()+"^^^^^^^^^^^^^^^^^^6");
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@33");
+                System.out.println(shipped.getOrderId());
                 List<Mypage> mypageList = mypageRepository.findByOrderId(shipped.getOrderId());
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@33");
+
                 for(Mypage mypage : mypageList){
                     // view 객체에 이벤트의 eventDirectValue 를 set 함
                     mypage.setDeliveryStatus(shipped.getStatus());
@@ -115,12 +103,17 @@ public class MypageViewHandler {
         try {
             if (cookQtyChecked.isMe()) {
                 // view 객체 조회
+
                 List<Mypage> mypageList = mypageRepository.findByOrderId(cookQtyChecked.getOrderId());
+
                 for(Mypage mypage : mypageList){
                     // view 객체에 이벤트의 eventDirectValue 를 set 함
+
                     mypage.setCookId(cookQtyChecked.getId());
                     mypage.setCookStatus(cookQtyChecked.getStatus());
-                    mypage.setOrderStatus(cookQtyChecked.getStatus());
+                    mypage.setOrderStatus("ORDER : QTY OVER CANCELED");
+                    mypage.setDeliveryStatus("DELIVERY : QTY OVER");
+
 
                     // view 레파지 토리에 save
                     mypageRepository.save(mypage);
@@ -141,6 +134,26 @@ public class MypageViewHandler {
                 for(Mypage mypage : mypageList){
                     // view 객체에 이벤트의 eventDirectValue 를 set 함
                     mypage.setDeliveryStatus(shippedCancelled.getStatus());
+                    // view 레파지 토리에 save
+                    mypageRepository.save(mypage);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void whenCookCancelled_then_UPDATE_3(@Payload CookCancelled cookCancelled) {
+        try {
+            if (cookCancelled.isMe()) {
+                // view 객체 조회
+                List<Mypage> mypageList = mypageRepository.findByOrderId(cookCancelled.getOrderId());
+                for(Mypage mypage : mypageList){
+                    // view 객체에 이벤트의 eventDirectValue 를 set 함
+                    mypage.setCookStatus(cookCancelled.getStatus());
+                    mypage.setOrderStatus("ORDER : ORDER CANCELLED");
+                    mypage.setDeliveryStatus("DELIVERY : ORDER CANCELLED");
                     // view 레파지 토리에 save
                     mypageRepository.save(mypage);
                 }
